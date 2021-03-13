@@ -3,6 +3,9 @@
 import asn1tools
 from Connection import Connection
 from SuplStart import SuplStart
+from SuplResponse import SuplResponse
+from SuplPosInit import SuplPosInit
+from SuplPosAck import SuplPosAck
 
 
 def query_assistance_data():
@@ -15,7 +18,20 @@ def query_assistance_data():
 
     supl_start = SuplStart()
     connection.send(supl_start.name, supl_start.pdu)
-    connection.receive('SUPLRESPONSE')
+
+    received_pdu = connection.receive('SUPLRESPONSE')
+    supl_response = SuplResponse(received_pdu)
+    slp_session_id = supl_response.get_slp_session_id()
+
+    supl_pos_init = SuplPosInit(slp_session_id)
+    connection.send(supl_pos_init.name, supl_pos_init.pdu)
+
+    received_pdu = connection.receive('SUPLPOS')
+
+    supl_pos_ack = SuplPosAck(slp_session_id)
+    connection.send(supl_pos_ack.name, supl_pos_ack.pdu)
+
+    received_pdu = connection.receive('SUPLEND')
 
 
 if __name__ == '__main__':
