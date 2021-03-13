@@ -7,5 +7,5 @@ class SuplResponse:
         self.name = 'SUPLSTART'
         self.pdu = pdu
 
-    def get_slp_session_id(self):
-        return self.pdu['sessionID']['slpSessionID']
+    def get_session_id(self):
+        return self.pdu['sessionID']

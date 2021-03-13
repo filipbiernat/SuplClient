@@ -4,17 +4,16 @@ import datetime
 
 class SuplPosInit:
 
-    def __init__(self, slp_session_id):
+    def __init__(self, session_id):
         self.name = 'SUPLPOSINIT'
-        self.pdu = self.__fill_pdu()
-        self.set_slp_session_id(slp_session_id)
 
-    def set_slp_session_id(self, slp_session_id):
-        self.pdu['sessionID']['slpSessionID'] = slp_session_id
+        self.pdu = self.__fill_pdu()
+        self.pdu['sessionID'] = session_id
 
     @staticmethod
     def __fill_pdu():
         pdu = {'length': 179,
+               'version': {'maj': 2, 'min': 1, 'servind': 0},
                'message': ('msSUPLPOSINIT',
                            {'locationId': {'cellInfo': ('ver2-CellInfo-extension',
                                                         ('wlanAP',
@@ -91,9 +90,5 @@ class SuplPosInit:
                                                                        b'\xff\xff\xe0\x03'
                                                                        b'0\xd0\xff\xff'
                                                                        b'\xff\xff\xff\xff'
-                                                                       b'\xff\xfe\x00']})}}),
-               'sessionID': {'setSessionID': {'sessionId': 38228,
-                                              'setId': ('iPAddress',
-                                                        ('ipv4Address', b'\n\x17db'))}},
-               'version': {'maj': 2, 'min': 1, 'servind': 0}}
+                                                                       b'\xff\xfe\x00']})}})}
         return pdu

@@ -21,14 +21,14 @@ def query_assistance_data():
 
     received_pdu = connection.receive('SUPLRESPONSE')
     supl_response = SuplResponse(received_pdu)
-    slp_session_id = supl_response.get_slp_session_id()
+    session_id = supl_response.get_session_id()
 
-    supl_pos_init = SuplPosInit(slp_session_id)
+    supl_pos_init = SuplPosInit(session_id)
     connection.send(supl_pos_init.name, supl_pos_init.pdu)
 
     received_pdu = connection.receive('SUPLPOS')
 
-    supl_pos_ack = SuplPosAck(slp_session_id)
+    supl_pos_ack = SuplPosAck(session_id)
     connection.send(supl_pos_ack.name, supl_pos_ack.pdu)
 
     received_pdu = connection.receive('SUPLEND')
