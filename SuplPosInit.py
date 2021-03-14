@@ -73,7 +73,7 @@ class SuplPosInit(SuplPdu):
                                                                             self._get_lpp_request_assistance_data_pdu()]})}})}
 
     def _get_lpp_provide_capabilities_pdu(self):
-        lpp_pdu = {'transactionID': {'initiator': 'targetDevice', 'transactionNumber': 3},
+        lpp_pdu = {'transactionID': {'initiator': 'targetDevice', 'transactionNumber': 0},
                    'endTransaction': True,
                    'lpp-MessageBody': ('c1',
                                        ('provideCapabilities',
@@ -136,7 +136,7 @@ class SuplPosInit(SuplPdu):
                                                                   'horizontalWithVerticalVelocityAndUncertainty': True}}})
 
     def _get_lpp_request_assistance_data_pdu(self):
-        lpp_pdu = {'transactionID': {'initiator': 'targetDevice', 'transactionNumber': 4},
+        lpp_pdu = {'transactionID': {'initiator': 'targetDevice', 'transactionNumber': 1},
                    'endTransaction': False,
                    'lpp-MessageBody': ('c1',
                                        ('requestAssistanceData',

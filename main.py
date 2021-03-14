@@ -5,6 +5,7 @@ from Connection import Connection
 from SuplStart import SuplStart
 from SuplResponse import SuplResponse
 from SuplPosInit import SuplPosInit
+from SuplPos import SuplPos
 from SuplPosAck import SuplPosAck
 
 
@@ -27,11 +28,14 @@ def query_assistance_data():
     connection.send(supl_pos_init.name, supl_pos_init.pdu)
 
     received_pdu = connection.receive('SUPLPOS')
+    supl_pos = SuplPos(supl_codec, lpp_codec, received_pdu, debug=True)
 
     supl_pos_ack = SuplPosAck(supl_codec, lpp_codec, session_id)
     connection.send(supl_pos_ack.name, supl_pos_ack.pdu)
 
-    received_pdu = connection.receive('SUPLEND')
+    connection.receive('SUPLEND')
+
+    supl_pos.get_lpp_provide_assistance_data_pdu()
 
 
 if __name__ == '__main__':
