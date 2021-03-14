@@ -1,12 +1,13 @@
 # !/usr/bin/python
 import datetime
+import pprint
 from SuplPdu import SuplPdu
 
 
 class SuplPosInit(SuplPdu):
 
-    def __init__(self, supl_codec, lpp_codec, session_id):
-        super().__init__(supl_codec, lpp_codec, 'SUPLPOSINIT')
+    def __init__(self, supl_codec, lpp_codec, session_id, debug=False):
+        super().__init__(supl_codec, lpp_codec, 'SUPLPOSINIT', debug)
         self.pdu['sessionID'] = session_id
         self._fill_pdu_length()
 
@@ -69,26 +70,18 @@ class SuplPosInit(SuplPdu):
                                                      'prefMethod': 'agpsSETBasedPreferred'},
                                  'sUPLPOS': {'posPayLoad': ('ver2-PosPayLoad-extension',
                                                             {'lPPPayload': [self._get_lpp_provide_capabilities_pdu(),
-                                                                            b'\x92\x08\x10bb\x12`D'
-                                                                            b' \xe0&\xe0'
-                                                                            b'\x80A\x81\x06'
-                                                                            b'`!\xff\xff'
-                                                                            b'\xff\xff\xff\xff'
-                                                                            b'\xff\xfc\x02\xce'
-                                                                            b'@\x05\x0f\xff'
-                                                                            b'\xff\xff\xff\xff'
-                                                                            b'\xff\xff\xe0\x03'
-                                                                            b'0\xd0\xff\xff'
-                                                                            b'\xff\xff\xff\xff'
-                                                                            b'\xff\xfe\x00']})}})}
+                                                                            self._get_lpp_request_assistance_data_pdu()]})}})}
 
     def _get_lpp_provide_capabilities_pdu(self):
-        msg = {'transactionID': {'initiator': 'targetDevice', 'transactionNumber': 3},
-               'endTransaction': True,
-               'lpp-MessageBody': ('c1',
-                                   ('provideCapabilities',
-                                    {'criticalExtensions': ('c1', self._get_lpp_provide_capabilities())}))}
-        return self.lpp_codec.encode("LPP-Message", msg)
+        lpp_pdu = {'transactionID': {'initiator': 'targetDevice', 'transactionNumber': 3},
+                   'endTransaction': True,
+                   'lpp-MessageBody': ('c1',
+                                       ('provideCapabilities',
+                                        {'criticalExtensions': ('c1', self._get_lpp_provide_capabilities())}))}
+        if self.debug:
+            print('Encoded LPP Provide Capabilities PDU:')
+            pprint.pprint(lpp_pdu)
+        return self.lpp_codec.encode("LPP-Message", lpp_pdu)
 
     @staticmethod
     def _get_lpp_provide_capabilities():
@@ -141,3 +134,50 @@ class SuplPosInit(SuplPdu):
                                                                   'horizontalVelocityWithUncertainty': False,
                                                                   'horizontalWithVerticalVelocity': False,
                                                                   'horizontalWithVerticalVelocityAndUncertainty': True}}})
+
+    def _get_lpp_request_assistance_data_pdu(self):
+        lpp_pdu = {'transactionID': {'initiator': 'targetDevice', 'transactionNumber': 4},
+                   'endTransaction': False,
+                   'lpp-MessageBody': ('c1',
+                                       ('requestAssistanceData',
+                                        {'criticalExtensions': ('c1', self._get_lpp_request_assistance_data())}))}
+        if self.debug:
+            print('Encoded LPP Request Assistance Data PDU:')
+            pprint.pprint(lpp_pdu)
+        return self.lpp_codec.encode("LPP-Message", lpp_pdu)
+
+    @staticmethod
+    def _get_lpp_request_assistance_data():
+        return ('requestAssistanceData-r9',
+                {'a-gnss-RequestAssistanceData': {'gnss-CommonAssistDataReq': {'gnss-IonosphericModelReq': {},
+                                                                               'gnss-ReferenceLocationReq': {},
+                                                                               'gnss-ReferenceTimeReq': {'gnss-TimeReqPrefList': [{'gnss-id': 'gps'},
+                                                                                                                                  {'gnss-id': 'glonass'},
+                                                                                                                                  {'gnss-id': 'galileo'}]}},
+                                                  'gnss-GenericAssistDataReq': [{'gnss-AlmanacReq': {},
+                                                                                 'gnss-ID': {'gnss-id': 'gps'},
+                                                                                 'gnss-NavigationModelReq': ('reqNavList',
+                                                                                                             {'svReqList': (b'\xff\xff\xff\xff'
+                                                                                                                            b'\xff\xff\xff\xfe', 64)}),
+                                                                                 'gnss-RealTimeIntegrityReq': {},
+                                                                                 'gnss-UTCModelReq': {}},
+                                                                                {'gnss-AlmanacReq': {},
+                                                                                 'gnss-AuxiliaryInformationReq': {},
+                                                                                 'gnss-ID': {'gnss-id': 'glonass'},
+                                                                                 'gnss-NavigationModelReq': ('reqNavList',
+                                                                                                             {'svReqList': (b'\xff\xff\xff\xff'
+                                                                                                                            b'\xff\xff\xff\xfe', 64)}),
+                                                                                 'gnss-RealTimeIntegrityReq': {},
+                                                                                 'gnss-TimeModelsReq': [{'deltaTreq': True,
+                                                                                                         'gnss-TO-IDsReq': 1}],
+                                                                                 'gnss-UTCModelReq': {}},
+                                                                                {'gnss-AlmanacReq': {},
+                                                                                 'gnss-ID': {'gnss-id': 'galileo'},
+                                                                                 'gnss-NavigationModelReq': ('reqNavList',
+                                                                                                             {'svReqList': (b'\xff\xff\xff\xff'
+                                                                                                                            b'\xff\xff\xff\xfe', 64)}),
+                                                                                 'gnss-RealTimeIntegrityReq': {},
+                                                                                 'gnss-UTCModelReq': {}}]},
+                 'commonIEsRequestAssistanceData': {'primaryCellID': {'cellidentity': (b'D \xe0 ', 28),
+                                                                      'mcc': [3, 1, 0],
+                                                                      'mnc': [2, 6, 0]}}})

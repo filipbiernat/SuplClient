@@ -3,10 +3,11 @@
 
 class SuplPdu:
 
-    def __init__(self, supl_codec, lpp_codec, name):
+    def __init__(self, supl_codec, lpp_codec, name, debug=False):
         self.supl_codec = supl_codec
         self.lpp_codec = lpp_codec
         self.name = name
+        self.debug = debug
         self._fill_pdu()
 
     def _fill_pdu(self):

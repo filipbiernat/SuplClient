@@ -23,7 +23,7 @@ def query_assistance_data():
     supl_response = SuplResponse(supl_codec, lpp_codec, received_pdu)
     session_id = supl_response.get_session_id()
 
-    supl_pos_init = SuplPosInit(supl_codec, lpp_codec, session_id)
+    supl_pos_init = SuplPosInit(supl_codec, lpp_codec, session_id, debug=True)
     connection.send(supl_pos_init.name, supl_pos_init.pdu)
 
     received_pdu = connection.receive('SUPLPOS')
