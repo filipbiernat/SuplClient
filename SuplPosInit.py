@@ -68,13 +68,7 @@ class SuplPosInit(SuplPdu):
                                                                        'oTDOA': False},
                                                      'prefMethod': 'agpsSETBasedPreferred'},
                                  'sUPLPOS': {'posPayLoad': ('ver2-PosPayLoad-extension',
-                                                            {'lPPPayload': [b'\x92\x07\x08!'
-                                                                            b'\xe4\x00(\x05'
-                                                                            b'\x04\x14\x02\x81'
-                                                                            b'\x8a\x01L\x01'
-                                                                            b'\x10l\x03b\xc4J\x1bH'
-                                                                            b'\x06\x04\x1b\x06'
-                                                                            b'\xc4D@\x82',
+                                                            {'lPPPayload': [self._get_lpp_provide_capabilities_pdu(),
                                                                             b'\x92\x08\x10bb\x12`D'
                                                                             b' \xe0&\xe0'
                                                                             b'\x80A\x81\x06'
@@ -87,3 +81,63 @@ class SuplPosInit(SuplPdu):
                                                                             b'0\xd0\xff\xff'
                                                                             b'\xff\xff\xff\xff'
                                                                             b'\xff\xfe\x00']})}})}
+
+    def _get_lpp_provide_capabilities_pdu(self):
+        msg = {'transactionID': {'initiator': 'targetDevice', 'transactionNumber': 3},
+               'endTransaction': True,
+               'lpp-MessageBody': ('c1',
+                                   ('provideCapabilities',
+                                    {'criticalExtensions': ('c1', self._get_lpp_provide_capabilities())}))}
+        return self.lpp_codec.encode("LPP-Message", msg)
+
+    @staticmethod
+    def _get_lpp_provide_capabilities():
+        return ('provideCapabilities-r9',
+                {'a-gnss-ProvideCapabilities': {'assistanceDataSupportList': {
+                    'gnss-CommonAssistanceDataSupport': {'gnss-ReferenceLocationSupport': {},
+                                                         'gnss-ReferenceTimeSupport': {
+                                                             'gnss-SystemTime': {'gnss-ids': (b'\x80', 1)}}},
+                    'gnss-GenericAssistanceDataSupport': [{'gnss-AcquisitionAssistanceSupport': {},
+                                                           'gnss-AlmanacSupport': {'almanacModel': (b'@', 2)},
+                                                           'gnss-ID': {'gnss-id': 'gps'},
+                                                           'gnss-NavigationModelSupport': {'clockModel': (b'\x10', 4),
+                                                                                           'orbitModel': (b'\x10', 4)},
+                                                           'gnss-RealTimeIntegritySupport': {}},
+                                                          {'gnss-AcquisitionAssistanceSupport': {},
+                                                           'gnss-AlmanacSupport': {'almanacModel': (b'\x08', 5)},
+                                                           'gnss-AuxiliaryInformationSupport': {},
+                                                           'gnss-ID': {'gnss-id': 'glonass'},
+                                                           'gnss-NavigationModelSupport': {},
+                                                           'gnss-RealTimeIntegritySupport': {}},
+                                                          {'gnss-AcquisitionAssistanceSupport': {},
+                                                           'gnss-AlmanacSupport': {'almanacModel': (b'\x80', 1)},
+                                                           'gnss-ID': {'gnss-id': 'galileo'},
+                                                           'gnss-NavigationModelSupport': {'clockModel': (b'\x80', 1),
+                                                                                           'orbitModel': (b'\x80', 1)},
+                                                           'gnss-RealTimeIntegritySupport': {}}]},
+                                                'gnss-SupportList': [{'adr-Support': False,
+                                                                      'agnss-Modes': {'posModes': (b'@', 2)},
+                                                                      'gnss-ID': {'gnss-id': 'gps'},
+                                                                      'gnss-Signals': {'gnss-SignalIDs': (b'\x01', 8)},
+                                                                      'velocityMeasurementSupport': True},
+                                                                     {'adr-Support': False,
+                                                                      'agnss-Modes': {'posModes': (b'@', 2)},
+                                                                      'gnss-ID': {'gnss-id': 'glonass'},
+                                                                      'gnss-Signals': {'gnss-SignalIDs': (b'\x01', 8)},
+                                                                      'velocityMeasurementSupport': True},
+                                                                     {'adr-Support': False,
+                                                                      'agnss-Modes': {'posModes': (b'@', 2)},
+                                                                      'gnss-ID': {'gnss-id': 'galileo'},
+                                                                      'gnss-Signals': {'gnss-SignalIDs': (b'\x01', 8)},
+                                                                      'velocityMeasurementSupport': True}],
+                                                'locationCoordinateTypes': {'ellipsoidArc': False,
+                                                                            'ellipsoidPoint': False,
+                                                                            'ellipsoidPointWithAltitude': False,
+                                                                            'ellipsoidPointWithAltitudeAndUncertaintyEllipsoid': True,
+                                                                            'ellipsoidPointWithUncertaintyCircle': False,
+                                                                            'ellipsoidPointWithUncertaintyEllipse': False,
+                                                                            'polygon': False},
+                                                'velocityTypes': {'horizontalVelocity': False,
+                                                                  'horizontalVelocityWithUncertainty': False,
+                                                                  'horizontalWithVerticalVelocity': False,
+                                                                  'horizontalWithVerticalVelocityAndUncertainty': True}}})
