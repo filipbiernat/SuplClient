@@ -15,6 +15,9 @@ def query_assistance_data():
                                           'ASN1Definitions/ULP-Components.asn'], 'uper')
     lpp_codec = asn1tools.compile_files('ASN1Definitions/LPP.asn', 'uper')
 
+    latitude = 49.883427
+    longitude = 19.492598
+
     connection = Connection('108.177.126.192', 7276, supl_codec, debug=True)
 
     supl_start = SuplStart(supl_codec, lpp_codec)
@@ -24,7 +27,7 @@ def query_assistance_data():
     supl_response = SuplResponse(supl_codec, lpp_codec, received_pdu)
     session_id = supl_response.get_session_id()
 
-    supl_pos_init = SuplPosInit(supl_codec, lpp_codec, session_id, debug=True)
+    supl_pos_init = SuplPosInit(supl_codec, lpp_codec, session_id, latitude, longitude, debug=True)
     connection.send(supl_pos_init.name, supl_pos_init.pdu)
 
     received_pdu = connection.receive('SUPLPOS')
